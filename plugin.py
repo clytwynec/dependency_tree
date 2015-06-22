@@ -9,14 +9,10 @@ from nose.plugins import Plugin
 
 
 log = logging.getLogger('nose.plugins.dependency_tree')
-
+log.setLevel('DEBUG')
 
 class DependencyTree(Plugin):
     """
-    A nose plugin that runs tests only for parts of code that depend on certain
-    files (--diff-files). The expectation is that this would be used to run
-    only tests affected by a changeset, as in the example below.
-
     Example Usage:
         nosetests --with-dependency-tree --diff-files `git diff --name-only`
     """
@@ -49,10 +45,16 @@ class DependencyTree(Plugin):
             return
 
         self.dep_tree = options.dep_tree
-        subprocess.check_call(
-            "sfood . --internal | sfood-graph > {}".format(self.dep_tree),
-            shell=True
-        )
+        if not os.path.isfile(self.dep_tree):
+            log.info("No dependency tree found, generating a new one...")
+
+            # generate the dependency tree
+            subprocess.check_call(
+                "sfood . --internal -q | sfood-graph > {}".format(
+                    self.dep_tree,
+                ),
+                shell=True
+            )
 
         self.diff_files = options.diff_files
         self.diff_dependent_tests = self.get_diff_dependent_tests()
@@ -66,25 +68,25 @@ class DependencyTree(Plugin):
         return False
 
     def get_diff_dependent_tests(self):
-        diff_files = re.split('; |, ', self.diff_files)
+        diff_files = re.split(' |,', self.diff_files)
         graph=pgv.AGraph(self.dep_tree).reverse()
-        test_pattern = re.compile(r'(?:^|[\b_\.%s-])[Tt]est' % os.sep)
+        test_pattern = self.conf.testMatch
 
         def _get_test_files(node, tests=None):
             if not tests:
                 tests=set()
-            if test_pattern.search(node):
-                return [os.path.abspath(node)]
-            else:
-                for cur,next in graph.iteroutedges(nbunch=node):
-                    tests.update(_get_test_files(next, tests))
+            if graph.has_node(node) and test_pattern.search(node):
+                tests.update([os.path.abspath(node)])
+            if graph.out_degree(nbunch=node) == 0:
                 return tests
+            for cur,next in graph.iteroutedges(nbunch=node):
+                tests.update(_get_test_files(next, tests))
+            return tests
 
         test_files = set()
         for fp in diff_files:
-            test_files.update(_get_test_files(fp))
+            test_files.update(_get_test_files(fp.strip()))
 
         log.debug("Tests for {}:\n\t{}".format(
             diff_files,'\n\t'.join(test_files)))
         return test_files
-

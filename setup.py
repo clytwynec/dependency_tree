@@ -5,8 +5,8 @@ setup(
     version = "0.1",
     packages = find_packages(),
     install_requires = [
-        'nose>=1.3.3',
-        'pygraphviz>=1.2',
+        'nose',
+        'pygraphviz>=1.1',
         'snakefood==1.4'
     ],
     py_modules = ['plugin'],
