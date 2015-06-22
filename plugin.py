@@ -9,7 +9,7 @@ from nose.plugins import Plugin
 
 
 log = logging.getLogger('nose.plugins.dependency_tree')
-log.setLevel('DEBUG')
+
 
 class DependencyTree(Plugin):
     """
