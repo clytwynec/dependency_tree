@@ -18,5 +18,5 @@ setup(
     # metadata for upload to PyPI
     author = "Christine Lytwynec",
     author_email = "chris.lytwynec@gmail.com",
-    description = "This is an Example Package",
+    description = "A nose plugin for running only tests affected by a changeset",
 )
