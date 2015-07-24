@@ -4,6 +4,7 @@ setup(
     name='dependency_tree',
     version = "0.1",
     packages = find_packages(),
+    license='Apache 2.0',
     install_requires = [
         'nose',
         'pygraphviz>=1.1',
