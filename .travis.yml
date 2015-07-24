@@ -1,0 +1,10 @@
+language: python
+python: "2.7"
+branches:
+    only:
+        - master
+install:
+    - "pip install -r requirements.txt"
+script:
+    - "pep8 plugin"
+    - "nosetests plugin/tests.py -v"

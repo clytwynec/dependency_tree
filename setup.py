@@ -13,7 +13,7 @@ setup(
     py_modules = ['plugin'],
     entry_points = {
         'nose.plugins.0.10': [
-            'dependency_tree = plugin:DependencyTree'
+            'dependency_tree = plugin.plugin:DependencyTree'
         ]
     },
     # metadata for upload to PyPI

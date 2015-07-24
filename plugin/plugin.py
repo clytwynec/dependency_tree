@@ -1,3 +1,6 @@
+"""
+DependencyTree Plugin Implementation
+"""
 import logging
 import os
 import pygraphviz as pgv
@@ -18,7 +21,7 @@ class DependencyTree(Plugin):
     """
     name = 'dependency-tree'
 
-    def options(self, parser, env=os.environ):
+    def options(self, parser, env):
         super(DependencyTree, self).options(parser, env=env)
 
         parser.add_option(
@@ -69,18 +72,18 @@ class DependencyTree(Plugin):
 
     def get_diff_dependent_tests(self):
         diff_files = re.split(' |,', self.diff_files)
-        graph=pgv.AGraph(self.dep_tree).reverse()
+        graph = pgv.AGraph(self.dep_tree).reverse()
         test_pattern = self.conf.testMatch
 
         def _get_test_files(node, tests=None):
             if not tests:
-                tests=set()
+                tests = set()
             if graph.has_node(node) and test_pattern.search(node):
                 tests.update([os.path.abspath(node)])
             if graph.out_degree(nbunch=node) == 0:
                 return tests
-            for cur,next in graph.iteroutedges(nbunch=node):
-                tests.update(_get_test_files(next, tests))
+            for _cur_node, next_node in graph.iteroutedges(nbunch=node):
+                tests.update(_get_test_files(next_node, tests))
             return tests
 
         test_files = set()
@@ -88,5 +91,5 @@ class DependencyTree(Plugin):
             test_files.update(_get_test_files(fp.strip()))
 
         log.debug("Tests for {}:\n\t{}".format(
-            diff_files,'\n\t'.join(test_files)))
+            diff_files, '\n\t'.join(test_files)))
         return test_files

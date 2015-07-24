@@ -1,0 +1,3 @@
+nose
+pygraphviz>=1.1
+snakefood==1.4
