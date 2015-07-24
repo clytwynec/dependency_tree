@@ -5,6 +5,7 @@ branches:
         - master
 install:
     - "pip install -r requirements.txt"
+    - "pip install pep8"
 script:
     - "pep8 plugin"
     - "nosetests plugin/tests.py -v"
