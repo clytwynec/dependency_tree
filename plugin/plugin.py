@@ -75,15 +75,24 @@ class DependencyTree(Plugin):
         graph = pgv.AGraph(self.dep_tree).reverse()
         test_pattern = self.conf.testMatch
 
-        def _get_test_files(node, tests=None):
+        def _get_test_files(node, visited=None, tests=None):
             if not tests:
                 tests = set()
+            if not visited:
+                visited = []
+
+            if node in visited:
+                return
+            else:
+                visited += ['node']
+
             if graph.has_node(node) and test_pattern.search(node):
                 tests.update([os.path.abspath(node)])
             if graph.out_degree(nbunch=node) == 0:
                 return tests
+            # TODO: cyclical imports?
             for _cur_node, next_node in graph.iteroutedges(nbunch=node):
-                tests.update(_get_test_files(next_node, tests))
+                tests.update(_get_test_files(next_node, visited, tests))
             return tests
 
         test_files = set()

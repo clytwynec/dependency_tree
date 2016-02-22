@@ -26,6 +26,18 @@ class DependecyTreePluginTestCase(TestCase):
         self.assertEqual(1, len(tests))
         self.assertIn('plugin/mock_tests/related_tests.py', tests.pop())
 
+    def test_get_diff_dependent_tests_cyclycal_import(self):
+        """
+        The related tests are chosen correctly from the dependency tree.
+        """
+        plugin = DependencyTree()
+        plugin.diff_files = 'plugin/not_plugin.py'
+        plugin.dep_tree = 'plugin/mock_tests/test_deptree.dot'
+        plugin.conf = Config()
+        tests = plugin.get_diff_dependent_tests()
+        self.assertEqual(1, len(tests))
+        self.assertIn('plugin/mock_tests/unrelated_tests.py', tests.pop())
+
 
 class PluginIntegrationTestCase(PluginTester, TestCase):
     """

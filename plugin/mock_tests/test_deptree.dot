@@ -30,6 +30,7 @@ strict digraph "dependencies" {
 "plugin/mock_tests/related_tests.py" -> "plugin/plugin.py";
 "plugin/mock_tests/unrelated_tests.py"  [style=filled];
 "plugin/mock_tests/unrelated_tests.py" -> "plugin/not_plugin.py";
+"plugin/not_plugin.py" -> "plugin/mock_tests/unrelated_tests.py";
 "setup.py"  [style=filled];
 
 
